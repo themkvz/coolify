@@ -65,7 +65,7 @@ trait TracksDeliveryFailures
 
         $channel = $this->notificationChannelName();
 
-        auditLog('notifications.'.Str::lower($channel).'.auto_disabled', [
+        auditLog('notifications.'.Str::slug($channel).'.auto_disabled', [
             'team_id' => $this->team_id,
             'reason' => $reason,
         ], 'warning');
@@ -104,7 +104,7 @@ trait TracksDeliveryFailures
         $channel = $this->notificationChannelName();
 
         $this->team->notify(new GeneralNotification(
-            "{$channel} notifications were disabled after ".self::DELIVERY_FAILURE_THRESHOLD." failed deliveries in a row.\nReason: {$reason}\nPlease fix the settings and enable {$channel} notifications again: ".base_url().'/notifications/'.Str::lower($channel),
+            "{$channel} notifications were disabled after ".self::DELIVERY_FAILURE_THRESHOLD." failed deliveries in a row.\nReason: {$reason}\nPlease fix the settings and enable {$channel} notifications again: ".base_url().'/notifications/'.Str::slug($channel),
             success: false,
         ));
     }
@@ -127,7 +127,7 @@ trait TracksDeliveryFailures
                 'channel' => $channel,
                 'failures' => self::DELIVERY_FAILURE_THRESHOLD,
                 'reason' => $reason,
-                'url' => base_url().'/notifications/'.Str::lower($channel),
+                'url' => base_url().'/notifications/'.Str::slug($channel),
             ]);
 
             $admins = $this->team->members()->wherePivotIn('role', ['admin', 'owner'])->get(['users.id', 'users.email']);

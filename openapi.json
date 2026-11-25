@@ -16167,6 +16167,62 @@
                 ]
             }
         },
+        "\/notifications\/google-chat": {
+            "get": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Get Google Chat notification settings",
+                "description": "Get the current team Google Chat notification settings. Encrypted secrets are only returned when the token has `read:sensitive` (or `root`) and the user is a team admin\/owner.",
+                "operationId": "get-current-team-google-chat-notifications",
+                "responses": {
+                    "200": {
+                        "description": "Google Chat notification settings."
+                    },
+                    "401": {
+                        "$ref": "#\/components\/responses\/401"
+                    },
+                    "400": {
+                        "$ref": "#\/components\/responses\/400"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "Update Google Chat notification settings",
+                "description": "Update the current team Google Chat notification settings.",
+                "operationId": "update-current-team-google-chat-notifications",
+                "responses": {
+                    "200": {
+                        "description": "Updated Google Chat notification settings."
+                    },
+                    "401": {
+                        "$ref": "#\/components\/responses\/401"
+                    },
+                    "400": {
+                        "$ref": "#\/components\/responses\/400"
+                    },
+                    "403": {
+                        "description": "Forbidden."
+                    },
+                    "422": {
+                        "$ref": "#\/components\/responses\/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "\/notifications\/slack": {
             "get": {
                 "tags": [

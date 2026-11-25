@@ -7,6 +7,7 @@ use App\Models\CloudProviderToken;
 use App\Models\DiscordNotificationSettings;
 use App\Models\EmailNotificationSettings;
 use App\Models\EnvironmentVariable;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\InstanceSettings;
 use App\Models\LocalFileVolume;
 use App\Models\NtfyNotificationSettings;
@@ -155,6 +156,7 @@ describe('Sensitive model fields are hidden by default', function () {
 
     test('Webhook-style notification settings hide delivery endpoints', function () {
         expect((new DiscordNotificationSettings)->getHidden())->toContain('discord_webhook_url');
+        expect((new GoogleChatNotificationSettings)->getHidden())->toContain('google_chat_webhook_url');
         expect((new SlackNotificationSettings)->getHidden())->toContain('slack_webhook_url');
         expect((new WebhookNotificationSettings)->getHidden())->toContain('webhook_url');
     });

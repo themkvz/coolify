@@ -2,6 +2,7 @@
 
 use App\Livewire\Notifications\Discord;
 use App\Livewire\Notifications\Email;
+use App\Livewire\Notifications\GoogleChat;
 use App\Livewire\Notifications\Ntfy;
 use App\Livewire\Notifications\Pushover;
 use App\Livewire\Notifications\Slack;
@@ -88,6 +89,7 @@ it('keeps notification providers disabled when enable validation fails', functio
     expect($team->{$settingsRelation}->fresh()->{$settingsColumn})->toBeFalse();
 })->with([
     'discord' => [Discord::class, 'toggleDiscordEnabled', 'discordEnabled', 'discordWebhookUrl', 'discordNotificationSettings', 'discord_enabled'],
+    'google_chat' => [GoogleChat::class, 'toggleGoogleChatEnabled', 'googleChatEnabled', 'googleChatWebhookUrl', 'googleChatNotificationSettings', 'google_chat_enabled'],
     'slack' => [Slack::class, 'toggleSlackEnabled', 'slackEnabled', 'slackWebhookUrl', 'slackNotificationSettings', 'slack_enabled'],
     'telegram' => [Telegram::class, 'toggleTelegramEnabled', 'telegramEnabled', 'telegramToken', 'telegramNotificationSettings', 'telegram_enabled'],
     'pushover' => [Pushover::class, 'togglePushoverEnabled', 'pushoverEnabled', 'pushoverUserKey', 'pushoverNotificationSettings', 'pushover_enabled'],
@@ -116,6 +118,7 @@ it('reverts a notification provider toggle to the saved value when enabling fail
     expect($team->{$settingsRelation}->fresh()->{$settingsColumn})->toBeFalse();
 })->with([
     'discord' => [Discord::class, 'instantSaveDiscordEnabled', 'discordEnabled', 'discordNotificationSettings', 'discord_enabled'],
+    'google_chat' => [GoogleChat::class, 'instantSaveGoogleChatEnabled', 'googleChatEnabled', 'googleChatNotificationSettings', 'google_chat_enabled'],
     'slack' => [Slack::class, 'instantSaveSlackEnabled', 'slackEnabled', 'slackNotificationSettings', 'slack_enabled'],
     'telegram' => [Telegram::class, 'instantSaveTelegramEnabled', 'telegramEnabled', 'telegramNotificationSettings', 'telegram_enabled'],
     'pushover' => [Pushover::class, 'instantSavePushoverEnabled', 'pushoverEnabled', 'pushoverNotificationSettings', 'pushover_enabled'],
@@ -138,6 +141,7 @@ it('reverts a notification provider toggle to the saved value when disabling fai
     expect($team->{$settingsRelation}->fresh()->{array_key_first($savedSettings)})->toBeTrue();
 })->with([
     'discord' => [Discord::class, 'instantSaveDiscordEnabled', 'discordEnabled', 'discordWebhookUrl', 'discordNotificationSettings', ['discord_enabled' => true, 'discord_webhook_url' => 'https://discord.com/api/webhooks/1/abc']],
+    'google_chat' => [GoogleChat::class, 'instantSaveGoogleChatEnabled', 'googleChatEnabled', 'googleChatWebhookUrl', 'googleChatNotificationSettings', ['google_chat_enabled' => true, 'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=k&token=t']],
     'slack' => [Slack::class, 'instantSaveSlackEnabled', 'slackEnabled', 'slackWebhookUrl', 'slackNotificationSettings', ['slack_enabled' => true, 'slack_webhook_url' => 'https://hooks.slack.com/services/T/B/C']],
     'telegram' => [Telegram::class, 'instantSaveTelegramEnabled', 'telegramEnabled', 'telegramToken', 'telegramNotificationSettings', ['telegram_enabled' => true, 'telegram_token' => '123:abc', 'telegram_chat_id' => '42']],
     'pushover' => [Pushover::class, 'instantSavePushoverEnabled', 'pushoverEnabled', 'pushoverUserKey', 'pushoverNotificationSettings', ['pushover_enabled' => true, 'pushover_user_key' => 'user', 'pushover_api_token' => 'token']],
@@ -157,6 +161,7 @@ it('reverts a notification event toggle to the saved value when saving fails', f
     expect((bool) $team->{$settingsRelation}->fresh()->{$eventColumn})->toBe($saved);
 })->with([
     'discord' => [Discord::class, 'discordWebhookUrl', 'deploymentSuccessDiscordNotifications', 'discordNotificationSettings', 'deployment_success_discord_notifications'],
+    'google_chat' => [GoogleChat::class, 'googleChatWebhookUrl', 'deploymentSuccessGoogleChatNotifications', 'googleChatNotificationSettings', 'deployment_success_google_chat_notifications'],
     'slack' => [Slack::class, 'slackWebhookUrl', 'deploymentSuccessSlackNotifications', 'slackNotificationSettings', 'deployment_success_slack_notifications'],
     'ntfy' => [Ntfy::class, 'ntfyUrl', 'deploymentSuccessNtfyNotifications', 'ntfyNotificationSettings', 'deployment_success_ntfy_notifications'],
 ]);
@@ -213,6 +218,7 @@ it('saves cleared notification provider fields while the provider is disabled', 
     }
 })->with([
     'discord' => [Discord::class, 'discordNotificationSettings', ['discord_webhook_url' => 'https://discord.com/api/webhooks/1/abc'], ['discordWebhookUrl']],
+    'google_chat' => [GoogleChat::class, 'googleChatNotificationSettings', ['google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=k&token=t'], ['googleChatWebhookUrl']],
     'slack' => [Slack::class, 'slackNotificationSettings', ['slack_webhook_url' => 'https://hooks.slack.com/services/T/B/C'], ['slackWebhookUrl']],
     'telegram' => [Telegram::class, 'telegramNotificationSettings', ['telegram_token' => '123:abc', 'telegram_chat_id' => '42'], ['telegramToken', 'telegramChatId']],
     'pushover' => [Pushover::class, 'pushoverNotificationSettings', ['pushover_user_key' => 'user', 'pushover_api_token' => 'token'], ['pushoverUserKey', 'pushoverApiToken']],
@@ -232,6 +238,7 @@ it('rejects cleared notification provider fields while the provider is enabled',
     expect($team->{$settingsRelation}->fresh()->{array_keys($savedSettings)[1]})->not->toBeEmpty();
 })->with([
     'discord' => [Discord::class, 'discordNotificationSettings', ['discord_enabled' => true, 'discord_webhook_url' => 'https://discord.com/api/webhooks/1/abc'], 'discordWebhookUrl'],
+    'google_chat' => [GoogleChat::class, 'googleChatNotificationSettings', ['google_chat_enabled' => true, 'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=k&token=t'], 'googleChatWebhookUrl'],
     'slack' => [Slack::class, 'slackNotificationSettings', ['slack_enabled' => true, 'slack_webhook_url' => 'https://hooks.slack.com/services/T/B/C'], 'slackWebhookUrl'],
     'telegram' => [Telegram::class, 'telegramNotificationSettings', ['telegram_enabled' => true, 'telegram_token' => '123:abc', 'telegram_chat_id' => '42'], 'telegramToken'],
     'pushover' => [Pushover::class, 'pushoverNotificationSettings', ['pushover_enabled' => true, 'pushover_user_key' => 'user', 'pushover_api_token' => 'token'], 'pushoverUserKey'],

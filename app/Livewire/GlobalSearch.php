@@ -901,6 +901,13 @@ class GlobalSearch extends Component
                 'search_text' => 'notifications alerts discord webhook',
             ],
             [
+                'name' => 'Google Chat Notifications',
+                'type' => 'navigation',
+                'description' => 'Configure Google Chat notifications',
+                'link' => route('notifications.google-chat'),
+                'search_text' => 'notifications alerts google chat webhook',
+            ],
+            [
                 'name' => 'Telegram Notifications',
                 'type' => 'navigation',
                 'description' => 'Configure Telegram notifications',

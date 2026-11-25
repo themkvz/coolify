@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Notifications\Channels\DiscordChannel;
 use App\Notifications\Channels\EmailChannel;
+use App\Notifications\Channels\GoogleChatChannel;
 use App\Notifications\Channels\NtfyChannel;
 use App\Notifications\Channels\PushoverChannel;
 use App\Notifications\Channels\SlackChannel;
@@ -33,6 +34,7 @@ trait HasNotificationSettings
         return match ($channel) {
             'email' => $this->emailNotificationSettings,
             'discord' => $this->discordNotificationSettings,
+            'google_chat' => $this->googleChatNotificationSettings,
             'telegram' => $this->telegramNotificationSettings,
             'slack' => $this->slackNotificationSettings,
             'pushover' => $this->pushoverNotificationSettings,
@@ -82,6 +84,7 @@ trait HasNotificationSettings
         $channelMap = [
             'email' => EmailChannel::class,
             'discord' => DiscordChannel::class,
+            'google_chat' => GoogleChatChannel::class,
             'telegram' => TelegramChannel::class,
             'slack' => SlackChannel::class,
             'pushover' => PushoverChannel::class,

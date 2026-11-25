@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\DiscordNotificationSettings;
 use App\Models\EmailNotificationSettings;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\NtfyNotificationSettings;
 use App\Models\PushoverNotificationSettings;
 use App\Models\SlackNotificationSettings;
@@ -91,6 +92,30 @@ class NotificationsController extends Controller
                     'image_vulnerabilities_discord_notifications' => 'sometimes|boolean',
                     'discord_ping_enabled' => 'sometimes|boolean',
                     'discord_ping_text' => 'sometimes|nullable|string|max:500',
+                ],
+            ],
+            'google_chat' => [
+                'model' => GoogleChatNotificationSettings::class,
+                'rules' => [
+                    'google_chat_enabled' => 'sometimes|boolean',
+                    'google_chat_webhook_url' => ['sometimes', 'nullable', 'string', new SafeWebhookUrl],
+                    'deployment_success_google_chat_notifications' => 'sometimes|boolean',
+                    'deployment_failure_google_chat_notifications' => 'sometimes|boolean',
+                    'status_change_google_chat_notifications' => 'sometimes|boolean',
+                    'restart_limit_reached_google_chat_notifications' => 'sometimes|boolean',
+                    'backup_success_google_chat_notifications' => 'sometimes|boolean',
+                    'backup_failure_google_chat_notifications' => 'sometimes|boolean',
+                    'scheduled_task_success_google_chat_notifications' => 'sometimes|boolean',
+                    'scheduled_task_failure_google_chat_notifications' => 'sometimes|boolean',
+                    'docker_cleanup_success_google_chat_notifications' => 'sometimes|boolean',
+                    'docker_cleanup_failure_google_chat_notifications' => 'sometimes|boolean',
+                    'server_disk_usage_google_chat_notifications' => 'sometimes|boolean',
+                    'server_reachable_google_chat_notifications' => 'sometimes|boolean',
+                    'server_unreachable_google_chat_notifications' => 'sometimes|boolean',
+                    'server_patch_google_chat_notifications' => 'sometimes|boolean',
+                    'server_auto_update_google_chat_notifications' => 'sometimes|boolean',
+                    'traefik_outdated_google_chat_notifications' => 'sometimes|boolean',
+                    'image_vulnerabilities_google_chat_notifications' => 'sometimes|boolean',
                 ],
             ],
             'slack' => [
@@ -429,6 +454,44 @@ class NotificationsController extends Controller
     public function update_discord(Request $request): JsonResponse
     {
         return $this->updateChannel($request, 'discord');
+    }
+
+    #[OA\Get(
+        summary: 'Get Google Chat notification settings',
+        description: 'Get the current team Google Chat notification settings. Encrypted secrets are only returned when the token has `read:sensitive` (or `root`) and the user is a team admin/owner.',
+        path: '/notifications/google-chat',
+        operationId: 'get-current-team-google-chat-notifications',
+        security: [['bearerAuth' => []]],
+        tags: ['Notifications'],
+        responses: [
+            new OA\Response(response: 200, description: 'Google Chat notification settings.'),
+            new OA\Response(response: 401, ref: '#/components/responses/401'),
+            new OA\Response(response: 400, ref: '#/components/responses/400'),
+        ]
+    )]
+    public function google_chat(Request $request): JsonResponse
+    {
+        return $this->showChannel('google_chat');
+    }
+
+    #[OA\Patch(
+        summary: 'Update Google Chat notification settings',
+        description: 'Update the current team Google Chat notification settings.',
+        path: '/notifications/google-chat',
+        operationId: 'update-current-team-google-chat-notifications',
+        security: [['bearerAuth' => []]],
+        tags: ['Notifications'],
+        responses: [
+            new OA\Response(response: 200, description: 'Updated Google Chat notification settings.'),
+            new OA\Response(response: 401, ref: '#/components/responses/401'),
+            new OA\Response(response: 400, ref: '#/components/responses/400'),
+            new OA\Response(response: 403, description: 'Forbidden.'),
+            new OA\Response(response: 422, ref: '#/components/responses/422'),
+        ]
+    )]
+    public function update_google_chat(Request $request): JsonResponse
+    {
+        return $this->updateChannel($request, 'google_chat');
     }
 
     #[OA\Get(

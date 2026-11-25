@@ -15,6 +15,7 @@ use App\Models\EnvironmentVariable;
 use App\Models\GiteaApp;
 use App\Models\GithubApp;
 use App\Models\GitlabApp;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\InstanceSettings;
 use App\Models\IntegrationToken;
 use App\Models\NtfyNotificationSettings;
@@ -115,6 +116,7 @@ class AuthServiceProvider extends ServiceProvider
         // Notification policies - all use the shared NotificationPolicy
         EmailNotificationSettings::class => NotificationPolicy::class,
         DiscordNotificationSettings::class => NotificationPolicy::class,
+        GoogleChatNotificationSettings::class => NotificationPolicy::class,
         TelegramNotificationSettings::class => NotificationPolicy::class,
         SlackNotificationSettings::class => NotificationPolicy::class,
         PushoverNotificationSettings::class => NotificationPolicy::class,

@@ -2,6 +2,7 @@
 
 use App\Livewire\Notifications\Discord as DiscordNotification;
 use App\Livewire\Notifications\Email as EmailNotification;
+use App\Livewire\Notifications\GoogleChat as GoogleChatNotification;
 use App\Livewire\Notifications\Ntfy as NtfyNotification;
 use App\Livewire\Notifications\Pushover as PushoverNotification;
 use App\Livewire\Notifications\Slack as SlackNotification;
@@ -44,6 +45,31 @@ test('member cannot send test notification on discord', function () {
         ->assertDispatched('error');
 });
 
+// --- Google Chat ---
+
+test('member cannot send test notification on google chat', function () {
+    $this->actingAs($this->member);
+    session(['currentTeam' => $this->team]);
+
+    $settings = $this->team->googleChatNotificationSettings;
+    $settings->update([
+        'google_chat_enabled' => true,
+        'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=token',
+    ]);
+
+    Livewire::test(GoogleChatNotification::class)
+        ->call('sendTestNotification')
+        ->assertDispatched('error');
+});
+
+test('admin can update google chat notification settings', function () {
+    $this->actingAs($this->admin);
+    session(['currentTeam' => $this->team]);
+
+    $settings = $this->team->googleChatNotificationSettings;
+
+    expect($this->admin->can('update', $settings))->toBeTrue();
+});
 // --- Slack ---
 
 test('member cannot send test notification on slack', function () {
@@ -367,6 +393,7 @@ test('admin can send test on all notification channels', function () {
     session(['currentTeam' => $this->team]);
 
     expect($this->admin->can('sendTest', $this->team->discordNotificationSettings))->toBeTrue();
+    expect($this->admin->can('sendTest', $this->team->googleChatNotificationSettings))->toBeTrue();
     expect($this->admin->can('sendTest', $this->team->slackNotificationSettings))->toBeTrue();
     expect($this->admin->can('sendTest', $this->team->telegramNotificationSettings))->toBeTrue();
     expect($this->admin->can('sendTest', $this->team->emailNotificationSettings))->toBeTrue();
@@ -380,6 +407,7 @@ test('member cannot send test on any notification channel', function () {
     session(['currentTeam' => $this->team]);
 
     expect($this->member->can('sendTest', $this->team->discordNotificationSettings))->toBeFalse();
+    expect($this->member->can('sendTest', $this->team->googleChatNotificationSettings))->toBeFalse();
     expect($this->member->can('sendTest', $this->team->slackNotificationSettings))->toBeFalse();
     expect($this->member->can('sendTest', $this->team->telegramNotificationSettings))->toBeFalse();
     expect($this->member->can('sendTest', $this->team->emailNotificationSettings))->toBeFalse();
@@ -409,6 +437,9 @@ test('member cannot view notification secrets', function (string $component, str
 })->with([
     'discord webhook' => [DiscordNotification::class, 'discordNotificationSettings', [
         'discord_webhook_url' => 'https://discord.com/api/webhooks/secret-member',
+    ]],
+    'google chat webhook' => [GoogleChatNotification::class, 'googleChatNotificationSettings', [
+        'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=secret-member',
     ]],
     'slack webhook' => [SlackNotification::class, 'slackNotificationSettings', [
         'slack_webhook_url' => 'https://hooks.slack.com/services/secret-member',
@@ -454,6 +485,9 @@ test('admin can view notification secrets', function (string $component, string 
 })->with([
     'discord webhook' => [DiscordNotification::class, 'discordNotificationSettings', [
         'discord_webhook_url' => 'https://discord.com/api/webhooks/secret-admin',
+    ]],
+    'google chat webhook' => [GoogleChatNotification::class, 'googleChatNotificationSettings', [
+        'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=secret-admin',
     ]],
     'slack webhook' => [SlackNotification::class, 'slackNotificationSettings', [
         'slack_webhook_url' => 'https://hooks.slack.com/services/secret-admin',

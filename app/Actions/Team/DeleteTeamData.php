@@ -17,6 +17,7 @@ use App\Models\EnvironmentVariable;
 use App\Models\GithubApp;
 use App\Models\GithubRunnerConfig;
 use App\Models\GithubRunnerExecution;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\IntegrationToken;
 use App\Models\LocalFileVolume;
 use App\Models\LocalPersistentVolume;
@@ -66,6 +67,7 @@ class DeleteTeamData
     private const NOTIFICATION_SETTINGS_MODELS = [
         EmailNotificationSettings::class,
         DiscordNotificationSettings::class,
+        GoogleChatNotificationSettings::class,
         SlackNotificationSettings::class,
         TelegramNotificationSettings::class,
         PushoverNotificationSettings::class,

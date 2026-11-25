@@ -6,6 +6,7 @@ use App\Contracts\ThrottledNotification;
 use App\Models\Server;
 use App\Notifications\CustomEmailNotification;
 use App\Notifications\Dto\DiscordMessage;
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Dto\NtfyMessage;
 use App\Notifications\Dto\PushoverMessage;
 use App\Notifications\Dto\SlackMessage;
@@ -129,6 +130,23 @@ class HighDiskUsage extends CustomEmailNotification implements ThrottledNotifica
             title: 'High disk usage detected',
             description: $description,
             color: SlackMessage::errorColor()
+        );
+    }
+
+    public function toGoogleChat(): GoogleChatMessage
+    {
+        $description = "Server '{$this->server->name}' high disk usage detected!\n";
+        $description .= "Disk usage: {$this->disk_usage}%\n";
+        $description .= "Threshold: {$this->server_disk_usage_notification_threshold}%\n\n";
+        $description .= "Please cleanup your disk to prevent data-loss.\n";
+        $description .= "Tips for cleanup: https://coolify.io/docs/knowledge-base/server/automated-cleanup\n";
+        $description .= "Change settings:\n";
+        $description .= '- Threshold: '.base_url().'/server/'.$this->server->uuid."#advanced\n";
+        $description .= '- Notifications: '.base_url().'/notifications/google-chat';
+
+        return new GoogleChatMessage(
+            title: 'High disk usage detected',
+            description: $description
         );
     }
 

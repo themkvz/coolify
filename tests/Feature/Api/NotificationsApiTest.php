@@ -2,6 +2,7 @@
 
 use App\Models\DiscordNotificationSettings;
 use App\Models\EmailNotificationSettings;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\InstanceSettings;
 use App\Models\NtfyNotificationSettings;
 use App\Models\PushoverNotificationSettings;
@@ -83,6 +84,7 @@ describe('GET /api/v1/notifications/*', function () {
     })->with([
         'email',
         'discord',
+        'google-chat',
         'slack',
         'telegram',
         'pushover',
@@ -120,6 +122,39 @@ describe('GET /api/v1/notifications/*', function () {
         $response->assertSuccessful();
         $response->assertJsonFragment([
             'discord_webhook_url' => 'https://discord.com/api/webhooks/visible/secret-token',
+        ]);
+    });
+
+    test('hides encrypted google chat secrets without read:sensitive ability', function () {
+        $this->team->googleChatNotificationSettings->update([
+            'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=hidden-secret',
+            'google_chat_enabled' => true,
+        ]);
+
+        $readToken = $this->user->createToken('read-token', ['read'])->plainTextToken;
+
+        $response = $this->withHeaders(authHeaders($readToken))
+            ->getJson('/api/v1/notifications/google-chat');
+
+        $response->assertSuccessful();
+        $response->assertJsonMissingPath('google_chat_webhook_url');
+        expect($response->getContent())->not->toContain('hidden-secret');
+    });
+
+    test('includes encrypted google chat secrets with read:sensitive ability for admins', function () {
+        $this->team->googleChatNotificationSettings->update([
+            'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=visible-secret',
+            'google_chat_enabled' => true,
+        ]);
+
+        $sensitiveToken = $this->user->createToken('read-sensitive-token', ['read', 'read:sensitive'])->plainTextToken;
+
+        $response = $this->withHeaders(authHeaders($sensitiveToken))
+            ->getJson('/api/v1/notifications/google-chat');
+
+        $response->assertSuccessful();
+        $response->assertJsonFragment([
+            'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=visible-secret',
         ]);
     });
 
@@ -271,6 +306,23 @@ describe('PATCH /api/v1/notifications/*', function () {
             ->and($settings->discord_ping_enabled)->toBeFalse()
             ->and($settings->discord_ping_text)->toBe('<@&123456789>')
             ->and($settings->deployment_success_discord_notifications)->toBeTrue();
+    });
+
+    test('updates google chat notification settings', function () {
+        $response = $this->withHeaders(authHeaders($this->bearerToken))
+            ->patchJson('/api/v1/notifications/google-chat', [
+                'google_chat_enabled' => true,
+                'google_chat_webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=token',
+                'deployment_success_google_chat_notifications' => true,
+            ]);
+
+        $response->assertSuccessful();
+        $response->assertJsonPath('google_chat_enabled', true);
+
+        $settings = GoogleChatNotificationSettings::query()->where('team_id', $this->team->id)->first();
+        expect($settings->google_chat_enabled)->toBeTrue()
+            ->and($settings->google_chat_webhook_url)->toBe('https://chat.googleapis.com/v1/spaces/AAA/messages?key=key&token=token')
+            ->and($settings->deployment_success_google_chat_notifications)->toBeTrue();
     });
 
     test('updates slack, telegram, pushover, ntfy, and webhook channels', function (string $channel, array $payload, string $modelClass, string $enabledField) {

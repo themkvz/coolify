@@ -91,6 +91,8 @@ Route::group([
     Route::patch('/notifications/email', [NotificationsController::class, 'update_email'])->middleware(['api.ability:write']);
     Route::get('/notifications/discord', [NotificationsController::class, 'discord'])->middleware(['api.ability:read']);
     Route::patch('/notifications/discord', [NotificationsController::class, 'update_discord'])->middleware(['api.ability:write']);
+    Route::get('/notifications/google-chat', [NotificationsController::class, 'google_chat'])->middleware(['api.ability:read']);
+    Route::patch('/notifications/google-chat', [NotificationsController::class, 'update_google_chat'])->middleware(['api.ability:write']);
     Route::get('/notifications/slack', [NotificationsController::class, 'slack'])->middleware(['api.ability:read']);
     Route::patch('/notifications/slack', [NotificationsController::class, 'update_slack'])->middleware(['api.ability:write']);
     Route::get('/notifications/telegram', [NotificationsController::class, 'telegram'])->middleware(['api.ability:read']);

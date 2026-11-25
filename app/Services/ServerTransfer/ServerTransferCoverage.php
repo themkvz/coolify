@@ -23,6 +23,7 @@ use App\Models\GithubApp;
 use App\Models\GithubRunnerConfig;
 use App\Models\GithubRunnerExecution;
 use App\Models\GitlabApp;
+use App\Models\GoogleChatNotificationSettings;
 use App\Models\ImageSbom;
 use App\Models\ImageScan;
 use App\Models\ImageScanIgnore;
@@ -378,6 +379,7 @@ final class ServerTransferCoverage
         ScheduledJobDelivery::class => 'Scheduler state of the source instance.',
         EmailNotificationSettings::class => 'Team notification settings, not server data.',
         DiscordNotificationSettings::class => 'Team notification settings, not server data.',
+        GoogleChatNotificationSettings::class => 'Team notification settings, not server data.',
         SlackNotificationSettings::class => 'Team notification settings, not server data.',
         TelegramNotificationSettings::class => 'Team notification settings, not server data.',
         PushoverNotificationSettings::class => 'Team notification settings, not server data.',

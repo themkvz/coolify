@@ -70,6 +70,7 @@ it('lists team, security, notification and profile pages for a team owner', func
         route('team.member.index'),
         route('security.api-tokens'),
         route('notifications.discord'),
+        route('notifications.google-chat'),
         route('notifications.telegram'),
         route('notifications.slack'),
         route('notifications.pushover'),

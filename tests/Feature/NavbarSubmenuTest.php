@@ -80,6 +80,7 @@ test('notifications and keys & tokens open their own submenus', function () {
     loginNavbarUser('owner');
 
     expect(renderNavbarAt('/notifications/discord'))
+        ->toContain('href="'.route('notifications.google-chat').'"')
         ->toContain('href="'.route('notifications.slack').'"')
         ->toMatch('#aria-current="page"[^>]*>.*?discord\.svg#s');
 

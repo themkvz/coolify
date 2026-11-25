@@ -13,11 +13,12 @@ class ManageNotifications extends RestActionTool
 {
     protected string $name = 'manage_notifications';
 
-    protected string $description = 'Read or change the notification settings of the authenticated team per channel (resource: email, discord, slack, telegram, pushover, ntfy, webhook). Webhook URLs, tokens, and passwords are never returned. Requires read ability for get, write ability for update. Same validation and permissions as the REST API.';
+    protected string $description = 'Read or change the notification settings of the authenticated team per channel (resource: email, discord, google_chat, slack, telegram, pushover, ntfy, webhook). Webhook URLs, tokens, and passwords are never returned. Requires read ability for get, write ability for update. Same validation and permissions as the REST API.';
 
     private const CHANNEL_PATHS = [
         'email' => 'notifications/email',
         'discord' => 'notifications/discord',
+        'google_chat' => 'notifications/google-chat',
         'slack' => 'notifications/slack',
         'telegram' => 'notifications/telegram',
         'pushover' => 'notifications/pushover',

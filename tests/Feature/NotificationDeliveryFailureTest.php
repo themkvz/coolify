@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\SendMessageToDiscordJob;
+use App\Jobs\SendMessageToGoogleChatJob;
 use App\Jobs\SendMessageToPushoverJob;
 use App\Jobs\SendMessageToSlackJob;
 use App\Jobs\SendMessageToTelegramJob;
@@ -10,6 +11,7 @@ use App\Models\Team;
 use App\Notifications\Channels\DiscordChannel;
 use App\Notifications\Channels\SlackChannel;
 use App\Notifications\Dto\DiscordMessage;
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Dto\PushoverMessage;
 use App\Notifications\Dto\SlackMessage;
 use App\Notifications\Internal\GeneralNotification;
@@ -39,6 +41,11 @@ function deliveryFailureChannel(Team $team, string $channel): array
             fn ($settings) => new SendMessageToDiscordJob(new DiscordMessage('Title', 'Description', DiscordMessage::infoColor()), 'https://example.com/discord', $settings),
             'discord_enabled',
         ],
+        'google_chat' => [
+            tap($team->googleChatNotificationSettings)->update(['google_chat_enabled' => true, 'google_chat_webhook_url' => 'https://example.com/google-chat']),
+            fn ($settings) => new SendMessageToGoogleChatJob(new GoogleChatMessage('Title', 'Description'), 'https://example.com/google-chat', $settings),
+            'google_chat_enabled',
+        ],
         'slack' => [
             tap($team->slackNotificationSettings)->update(['slack_enabled' => true, 'slack_webhook_url' => 'https://example.com/slack']),
             fn ($settings) => new SendMessageToSlackJob(new SlackMessage('Title', 'Description'), 'https://example.com/slack', $settings),
@@ -64,6 +71,7 @@ function deliveryFailureChannel(Team $team, string $channel): array
 
 dataset('configuration errors', [
     'discord deleted webhook' => ['discord', 404, ['message' => 'Unknown Webhook', 'code' => 10015]],
+    'google chat deleted webhook' => ['google_chat', 404, ['error' => ['code' => 404, 'message' => 'Not Found']]],
     'slack archived channel' => ['slack', 410, 'channel_is_archived'],
     'telegram invalid token' => ['telegram', 401, ['ok' => false, 'description' => 'Unauthorized']],
     'telegram malformed token' => ['telegram', 404, ['ok' => false, 'error_code' => 404, 'description' => 'Not Found']],
@@ -91,7 +99,7 @@ it('retries rate limits and server errors without counting them', function (stri
 
     expect(fn () => $makeJob($settings->fresh())->handle())->toThrow(RuntimeException::class);
     expect($settings->fresh()->failure_count)->toBe(0);
-})->with(['discord', 'slack', 'telegram', 'pushover', 'webhook'])->with([429, 500]);
+})->with(['discord', 'google_chat', 'slack', 'telegram', 'pushover', 'webhook'])->with([429, 500]);
 
 it('does not count errors caused by the message payload', function (string $channel, array|string $body) {
     [$settings, $makeJob] = deliveryFailureChannel($this->team, $channel);
@@ -102,6 +110,7 @@ it('does not count errors caused by the message payload', function (string $chan
     expect($settings->fresh()->failure_count)->toBe(0);
 })->with([
     'discord' => ['discord', ['message' => 'Invalid Form Body', 'code' => 50035]],
+    'google_chat' => ['google_chat', ['error' => ['code' => 400, 'message' => 'Invalid argument']]],
     'slack' => ['slack', 'invalid_payload'],
     'telegram' => ['telegram', ['ok' => false, 'description' => "Bad Request: can't parse entities"]],
     'pushover' => ['pushover', ['message' => 'cannot be longer than 1024 characters', 'status' => 0]],

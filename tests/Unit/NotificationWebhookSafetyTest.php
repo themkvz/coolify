@@ -1,9 +1,11 @@
 <?php
 
 use App\Jobs\SendMessageToDiscordJob;
+use App\Jobs\SendMessageToGoogleChatJob;
 use App\Jobs\SendMessageToSlackJob;
 use App\Jobs\SendWebhookJob;
 use App\Notifications\Dto\DiscordMessage;
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Dto\SlackMessage;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -36,13 +38,27 @@ it('blocks queued Discord notifications to IPv4-mapped link-local URLs', functio
     Http::assertNothingSent();
 });
 
-it('blocks queued webhook, Discord, and Slack sends to NAT64 local-use URLs', function () {
+it('blocks queued Google Chat notifications to IPv4-mapped link-local URLs', function () {
+    Http::fake();
+
+    $job = new SendMessageToGoogleChatJob(
+        new GoogleChatMessage('Test', 'Description'),
+        'http://[::ffff:169.254.169.254]/'
+    );
+
+    $job->handle();
+
+    Http::assertNothingSent();
+});
+
+it('blocks queued webhook, Discord, Google Chat, and Slack sends to NAT64 local-use URLs', function () {
     Http::fake();
 
     $url = 'http://[64:ff9b:1::7f00:1]/';
 
     (new SendWebhookJob(['event' => 'test'], $url))->handle();
     (new SendMessageToDiscordJob(new DiscordMessage('Test', 'Description', DiscordMessage::infoColor()), $url))->handle();
+    (new SendMessageToGoogleChatJob(new GoogleChatMessage('Test', 'Description'), $url))->handle();
     (new SendMessageToSlackJob(new SlackMessage('Test', 'Description'), $url))->handle();
 
     Http::assertNothingSent();

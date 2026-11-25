@@ -1,5 +1,6 @@
 <?php
 
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Server\HetznerDeletionFailed;
 
 afterEach(function () {
@@ -110,4 +111,18 @@ it('generates correct slack content', function () {
     expect($slack->title)->toContain('Hetzner Server Deletion Failed')
         ->and($slack->description)->toContain('#44444')
         ->and($slack->description)->toContain('Permission denied');
+});
+
+it('generates correct google chat content', function () {
+    $notification = new HetznerDeletionFailed(
+        hetznerServerId: 55555,
+        teamId: 1,
+        errorMessage: 'DNS resolution failed'
+    );
+
+    $googleChat = GoogleChatMessage::fromSlack($notification->toSlack());
+
+    expect($googleChat->title)->toContain('Hetzner Server Deletion Failed')
+        ->and($googleChat->description)->toContain('#55555')
+        ->and($googleChat->description)->toContain('DNS resolution failed');
 });

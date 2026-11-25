@@ -114,6 +114,7 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsNtfy, SendsPu
             'use_instance_email_settings' => isDev(),
         ]);
         $this->discordNotificationSettings()->create();
+        $this->googleChatNotificationSettings()->create();
         $this->slackNotificationSettings()->create();
         $this->telegramNotificationSettings()->create();
         $this->pushoverNotificationSettings()->create();
@@ -497,6 +498,11 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsNtfy, SendsPu
     public function discordNotificationSettings()
     {
         return $this->hasOne(DiscordNotificationSettings::class);
+    }
+
+    public function googleChatNotificationSettings()
+    {
+        return $this->hasOne(GoogleChatNotificationSettings::class);
     }
 
     public function telegramNotificationSettings()

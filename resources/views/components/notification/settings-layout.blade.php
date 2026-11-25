@@ -2,6 +2,7 @@
     $notificationMenuItems = [
         ['label' => 'Email', 'route' => 'notifications.email', 'icon' => 'mail'],
         ['label' => 'Discord', 'route' => 'notifications.discord', 'brandIcon' => 'discord'],
+        ['label' => 'Google Chat', 'route' => 'notifications.google-chat', 'brandIcon' => 'googlechat'],
         ['label' => 'Telegram', 'route' => 'notifications.telegram', 'brandIcon' => 'telegram'],
         ['label' => 'Slack', 'route' => 'notifications.slack', 'brandIcon' => 'slack'],
         ['label' => 'Pushover', 'route' => 'notifications.pushover', 'brandIcon' => 'pushover'],

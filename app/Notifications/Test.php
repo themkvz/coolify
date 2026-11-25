@@ -4,12 +4,14 @@ namespace App\Notifications;
 
 use App\Notifications\Channels\DiscordChannel;
 use App\Notifications\Channels\EmailChannel;
+use App\Notifications\Channels\GoogleChatChannel;
 use App\Notifications\Channels\NtfyChannel;
 use App\Notifications\Channels\PushoverChannel;
 use App\Notifications\Channels\SlackChannel;
 use App\Notifications\Channels\TelegramChannel;
 use App\Notifications\Channels\WebhookChannel;
 use App\Notifications\Dto\DiscordMessage;
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Dto\NtfyMessage;
 use App\Notifications\Dto\PushoverMessage;
 use App\Notifications\Dto\SlackMessage;
@@ -38,6 +40,7 @@ class Test extends Notification implements ShouldQueue
             $channels = match ($this->channel) {
                 'email' => [EmailChannel::class],
                 'discord' => [DiscordChannel::class],
+                'google_chat' => [GoogleChatChannel::class],
                 'telegram' => [TelegramChannel::class],
                 'slack' => [SlackChannel::class],
                 'pushover' => [PushoverChannel::class],
@@ -130,6 +133,14 @@ class Test extends Notification implements ShouldQueue
         return new SlackMessage(
             title: 'Test Slack Notification',
             description: 'This is a test Slack notification from Coolify.'
+        );
+    }
+
+    public function toGoogleChat(): GoogleChatMessage
+    {
+        return new GoogleChatMessage(
+            title: 'Test Google Chat Notification',
+            description: 'This is a test Google Chat notification from Coolify.'
         );
     }
 

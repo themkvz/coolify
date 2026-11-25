@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Notifications\Dto\DiscordMessage;
+use App\Notifications\Dto\GoogleChatMessage;
 use App\Notifications\Dto\NtfyMessage;
 use App\Notifications\Dto\PushoverMessage;
 use App\Notifications\Dto\SlackMessage;
@@ -138,6 +139,25 @@ class SslExpirationNotification extends CustomEmailNotification
             title: '🔒 SSL Certificates Renewed',
             description: $description,
             color: SlackMessage::warningColor()
+        );
+    }
+
+    public function toGoogleChat(): GoogleChatMessage
+    {
+        $resourceNames = $this->resources->pluck('name')->join(', ');
+        $description = "SSL certificates have been renewed for: {$resourceNames}\n\n";
+        $description .= '*Action Required:* These resources need to be redeployed manually for the new SSL certificates to take effect.';
+
+        if (! empty($this->urls)) {
+            $description .= "\n\n*Resource URLs:*\n";
+            foreach ($this->urls as $name => $url) {
+                $description .= "• {$name}: {$url}\n";
+            }
+        }
+
+        return new GoogleChatMessage(
+            title: '🔒 SSL Certificates Renewed',
+            description: $description
         );
     }
 

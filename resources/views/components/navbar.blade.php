@@ -155,6 +155,7 @@
                         ['label' => 'Notifications', 'icon' => 'notifications', 'visible' => $teamWide, 'children' => [
                             ['label' => 'Email', 'icon' => 'mail', 'href' => route('notifications.email'), 'active' => request()->is('notifications/email')],
                             ['label' => 'Discord', 'brandIcon' => 'discord', 'href' => route('notifications.discord'), 'active' => request()->is('notifications/discord')],
+                            ['label' => 'Google Chat', 'brandIcon' => 'googlechat', 'href' => route('notifications.google-chat'), 'active' => request()->is('notifications/google-chat')],
                             ['label' => 'Telegram', 'brandIcon' => 'telegram', 'href' => route('notifications.telegram'), 'active' => request()->is('notifications/telegram')],
                             ['label' => 'Slack', 'brandIcon' => 'slack', 'href' => route('notifications.slack'), 'active' => request()->is('notifications/slack')],
                             ['label' => 'Pushover', 'brandIcon' => 'pushover', 'href' => route('notifications.pushover'), 'active' => request()->is('notifications/pushover')],
